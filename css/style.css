@@ -80,10 +80,10 @@ input{ outline:none;}
 }
 .upload_img{
     width:30%;
-    height:1.4rem;
+    height:2rem;
     border-radius: 0.1rem;
     margin-top:0.2rem;
-    margin-right: 3%;
+    margin-right: 2%;
 }
 .photo_item{
     border:solid 1px #e0e0e0;

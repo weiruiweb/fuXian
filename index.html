@@ -20,70 +20,72 @@
 	<div class="maincontent" >
 		<div class="main_box">
 			<div class="banner">
-				<img src="images/banner.jpg">
+
+				<img :src="bannerData[0]?bannerData[0].url:''">
 			</div>
 			<div class="w710">
 				<div class="complain">
 					<div class="complain_tlt">投诉内容描述</div>
-					<textarea placeholder="请输入投诉内容"></textarea>
+					<textarea placeholder="请输入投诉内容"  v-model='submitData.content'></textarea>
 					<div class="photo flex">
-						<div class="photo_item upload_img">
+						<div class="photo_item upload_img" v-for="item in submitData.mainImg">
+							<img :src="item.url">
+						</div>
+
+						<div class="photo_item upload_img"  @change="upload"  :style="submitData.mainImg.length>=6&&submitData.mainImg?'display:none':''" >
+							<input  type="file" style="opacity: 0;position: absolute;z-index: 1;height:2rem;width: 29%" accept="image/*" 
+							 multiple v-if="isIos"></input>
+							<input  type="file" style="opacity: 0;position: absolute;z-index: 1;height:2rem;width: 29%" accept="image/*" 
+							capture="" multiple v-else></input>
 							<div class="photo_top flex"><img src="images/photo.jpg"></div>
 							<div class="photo_bottom">点击添加照片</div>
 						</div>
-						<div class="upload_img">
-							<img src="images/photo.jpg">
-						</div>
-						<div class="upload_img">
-							<img src="images/photo.jpg">
-						</div>
-						<div class="upload_img">
-							<img src="images/photo.jpg">
-						</div>
-						<div class="upload_img">
-							<img src="images/photo.jpg">
-						</div>
+
 					</div>
 				</div>
 				<div class="note">
 					<div class="note_tlt">
 						<div class="notes"><span class="color">*</span>注意事项<span class="color">*</span></div>
 					</div>
-					<p>最多上传6张照片(其中包括远近距离拍摄各一张)</p>
-					<p>最多上传6张照片(其中包括远近距离拍摄各一张)</p>
+					<div class="content ql-editor" style="clear: both;">
+            				<p class="p1" v-html="artData[0]?artData[0].content:''"></p>
+        			</div>
 				</div>
 				<div class="contact flex">
-					<img src="images/select.jpg">
-					<span>是否为匿名(匿名后，我们将保密你的联系方式)</span>
+					<img :src="(isAnonymous?'images/select_active.jpg':'images/select.jpg')" @click="ifAnonymous">
+					<span>是否为匿名(匿名后，不需填写姓名电话)</span>
 				</div>
-				<div class="contact">
+				<div class="contact" :style="isAnonymous?'display: none':''">
 					<div class="input_list font28 flex">
 						<div class="input_before">您的姓名:</div>
-						<input placeholder="请输入姓名"></input>
+						<input :placeholder="(isAnonymous?'':'请输入姓名')" v-model='submitData.title'></input>
 					</div>
 					<div class="input_list font28 flex">
 						<div class="input_before">联系电话:</div>
-						<input placeholder="请输入联系电话"></input>
+						<input :placeholder="(isAnonymous?'':'请输入联系电话')" v-model='submitData.phone'></input>
 					</div>
 				</div>
-				<button class="submit_info">提交</button>
+				<button class="submit_info" v-on:click="submit">提交</button>
 			</div>
 		</div>
 	</div>
 </div>
-<script type="text/babel">
+<script type="text/javascript">
 			
 			var app = new Vue({
 				el: '#app',
 				data: function() {
 					return {
 						bannerData:[],
-						productData1: [],
-						productData2: [],
-						productData3: [],
-						productData4: [],
-						productData5: [],
-						weixinCopy:[],
+						artData:[],
+						submitData:{
+							content:'',
+							title:'',
+							phone:'',
+							mainImg:[]
+						},
+						picFlag:false,
+						isAnonymous:false,
 						paginate: {
 							
 							count: 0,
@@ -91,12 +93,14 @@
 							pagesize: 6,
 							is_page: true,
 						},
+
 						searchItem:{
 							
 						},
 						pageArray:[],
 						allPages:0,
 						linkPage:'',
+						isIos:false
 					}
 
 				},
@@ -104,156 +108,138 @@
 				created: function () {
 
 					this.getBannerData();
-				    this.getProductData1();
-				    this.getProductData2();
-					this.getProductData3();
-				    this.getProductData4();
-				    this.getProductData5();
-				    this.getWeixinCopy();
+				    this.getartData()
 				},
+
 				methods:{
 
 					getBannerData() {
 						var self = this;
-						
+						var ua = navigator.userAgent.toLowerCase();
+   						
+					    self.isIos = (ua.indexOf('iphone') != -1) || (ua.indexOf('ipad') != -1);
+
 						var postData = {
 						    count: 0,
 						    currentPage: 1,
 						    is_page: true,
 						    pagesize:1,
 						    searchItem:{
-								thirdapp_id:26,
-								menu_id:343
+								thirdapp_id:12,
+								title:'轮播图'
 							}
 					    };
 
 						var callback = (res)=>{
-							self.bannerData = res.data;
+							self.bannerData = res.info.data[0]['mainImg'];
 						};
-						window.base.articleList(postData,callback);
+						window.base.labelGet(postData,callback);
+					},		
+
+
+
+					messageAdd() {
+						var self = this;
+						var postData = {
+							data:{
+								title:self.submitData.title,
+								phone:self.submitData.phone,
+								content:self.submitData.content,	
+								mainImg:self.submitData.mainImg,
+								user_type:0,
+								thirdapp_id:12,	
+							}
+					    };
+						var callback = (res)=>{
+							if(res.solely_code==100000){
+						
+								alert('提交成功');
+								window.location.reload()
+							}else{
+								alert('网络故障')
+							}
+						};
+						window.base.messageAdd(postData,callback);
 					},
-					
-					getProductData1() {
+
+
+					getartData(){
+					    const self = this;
+					    const postData = {};
+					    postData.searchItem = {
+					      thirdapp_id:12
+					    };
+					    postData.getBefore = {
+					      article:{
+					        tableName:'label',
+					        searchItem:{
+					          title:['=',['注意事项']],
+					        },
+					        middleKey:'menu_id',
+					        key:'id',
+					        condition:'in',
+					      },
+					    };
+					    const callback = (res)=>{
+					      if(res.info.data.length>0){
+					        self.artData = res.info.data;
+					      };
+					      console.log(self.artData);
+					   
+					    };
+					    window.base.articleGet(postData,callback);
+					},
+
+					upload(e){
+						var self = this;
+						var file = e.target.files[0];
+						console.log(file)
+						var param = new FormData();
+						param.append('file',file,file.name);
+						param.append('thirdapp_id',12);
+						console.log(param.get('file'))
+						
+						var callback = function (res) {
+							if(res.solely_code==100000&&res.info&&res.info.url){ 
+	              				self.submitData.mainImg.push({url:res.info.url})
+	              			}
+						};
+						
+						var res = window.base.upLoadImg(param,callback);
+						
+					},
+
+
+					ifAnonymous(){
+						var self = this;
+						console.log(666)
+						self.isAnonymous = !self.isAnonymous
+						console.log(self.isAnonymous)
+					},
+
+					submit(){
 						var self = this;
 						
-						var postData = {
-						    count: 0,
-						    currentPage: 1,
-						    pagesize:6,
-						    is_page:true,
-						    searchItem:{
-								thirdapp_id:26,
-								menu_id:334
-							}
-					    };
+						var newObject = window.base.cloneForm(self.submitData);
 
-						var callback = (res)=>{
-							self.productData1 = res.data;
+						delete newObject.mainImg;
+						if(self.isAnonymous){
+							delete newObject.phone;
+							delete newObject.title;
 						};
-						window.base.articleList(postData,callback);
-					},
-
-					getProductData2() {
-						var self = this;
+						const pass = window.base.checkComplete(newObject);
+						if(pass){
+							self.messageAdd()
+						}else{
+							alert('请补全信息')
+						};	
 						
-						var postData = {
-						    count: 0,
-						    currentPage: 1,
-						    pagesize:6,
-						    is_page:true,
-						    searchItem:{
-								thirdapp_id:26,
-								menu_id:336
-							}
-					    };
-
-						var callback = (res)=>{
-							self.productData2 = res.data;
-						};
-						window.base.articleList(postData,callback);
-					},
-
-					getProductData3() {
-						var self = this;
 						
-						var postData = {
-						    count: 0,
-						    currentPage: 1,
-						    pagesize:6,
-						    is_page:true,
-						    searchItem:{
-								thirdapp_id:26,
-								menu_id:337
-							}
-					    };
-
-						var callback = (res)=>{
-							self.productData3 = res.data;
-						};
-						window.base.articleList(postData,callback);
-					},
-
-					getProductData4() {
-						var self = this;
 						
-						var postData = {
-						    count: 0,
-						    currentPage: 1,
-						    pagesize:6,
-						    is_page:true,
-						    searchItem:{
-								thirdapp_id:26,
-								menu_id:340
-							}
-					    };
-
-						var callback = (res)=>{
-							self.productData4 = res.data;
-						};
-						window.base.articleList(postData,callback);
-					},
-
-					getProductData5() {
-						var self = this;
 						
-						var postData = {
-						    count: 0,
-						    currentPage: 1,
-						    pagesize:6,
-						    is_page:true,
-						    searchItem:{
-								thirdapp_id:26,
-								menu_id:341
-							}
-					    };
-
-						var callback = (res)=>{
-							self.productData5 = res.data;
-						};
-						window.base.articleList(postData,callback);
 					},
 
-					getWeixinCopy() {
-						var self = this;
-						
-						var postData = {
-						    count: 0,
-						    currentPage: 1,
-						    pagesize:6,
-						    is_page:true,
-						    searchItem:{
-								thirdapp_id:26,
-								menu_id:342
-							}
-					    };
 
-						var callback = (res)=>{
-							self.weixinCopy = res.data;
-						};
-						window.base.articleList(postData,callback);
-					},
-
-					
 
 				}
 			});
