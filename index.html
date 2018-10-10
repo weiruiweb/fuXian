@@ -1,0 +1,263 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="user-scalable=no, initial-scale=1.0, maximum-scale=1.0" />
+<META HTTP-EQUIV="Pragma" CONTENT="no-cache"> 
+<META HTTP-EQUIV="Cache-Control" CONTENT="no-cache"> 
+<META HTTP-EQUIV="Expires" CONTENT="0">
+<title>富县</title>
+<script src="js/jquery1.8.3.js"></script>
+<script src="js/rem.js"></script>
+<link rel="stylesheet" type="text/css" href="css/style.css" />
+<script src="js/browser.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+<script src="js/base.js" type="application/javascript"></script>
+</head>
+
+<body>
+<div id="app">
+	<div class="maincontent" >
+		<div class="main_box">
+			<div class="banner">
+				<img src="images/banner.jpg">
+			</div>
+			<div class="w710">
+				<div class="complain">
+					<div class="complain_tlt">投诉内容描述</div>
+					<textarea placeholder="请输入投诉内容"></textarea>
+					<div class="photo flex">
+						<div class="photo_item upload_img">
+							<div class="photo_top flex"><img src="images/photo.jpg"></div>
+							<div class="photo_bottom">点击添加照片</div>
+						</div>
+						<div class="upload_img">
+							<img src="images/photo.jpg">
+						</div>
+						<div class="upload_img">
+							<img src="images/photo.jpg">
+						</div>
+						<div class="upload_img">
+							<img src="images/photo.jpg">
+						</div>
+						<div class="upload_img">
+							<img src="images/photo.jpg">
+						</div>
+					</div>
+				</div>
+				<div class="note">
+					<div class="note_tlt">
+						<div class="notes"><span class="color">*</span>注意事项<span class="color">*</span></div>
+					</div>
+					<p>最多上传6张照片(其中包括远近距离拍摄各一张)</p>
+					<p>最多上传6张照片(其中包括远近距离拍摄各一张)</p>
+				</div>
+				<div class="contact flex">
+					<img src="images/select.jpg">
+					<span>是否为匿名(匿名后，我们将保密你的联系方式)</span>
+				</div>
+				<div class="contact">
+					<div class="input_list font28 flex">
+						<div class="input_before">您的姓名:</div>
+						<input placeholder="请输入姓名"></input>
+					</div>
+					<div class="input_list font28 flex">
+						<div class="input_before">联系电话:</div>
+						<input placeholder="请输入联系电话"></input>
+					</div>
+				</div>
+				<button class="submit_info">提交</button>
+			</div>
+		</div>
+	</div>
+</div>
+<script type="text/babel">
+			
+			var app = new Vue({
+				el: '#app',
+				data: function() {
+					return {
+						bannerData:[],
+						productData1: [],
+						productData2: [],
+						productData3: [],
+						productData4: [],
+						productData5: [],
+						weixinCopy:[],
+						paginate: {
+							
+							count: 0,
+							currentPage: 1,
+							pagesize: 6,
+							is_page: true,
+						},
+						searchItem:{
+							
+						},
+						pageArray:[],
+						allPages:0,
+						linkPage:'',
+					}
+
+				},
+				
+				created: function () {
+
+					this.getBannerData();
+				    this.getProductData1();
+				    this.getProductData2();
+					this.getProductData3();
+				    this.getProductData4();
+				    this.getProductData5();
+				    this.getWeixinCopy();
+				},
+				methods:{
+
+					getBannerData() {
+						var self = this;
+						
+						var postData = {
+						    count: 0,
+						    currentPage: 1,
+						    is_page: true,
+						    pagesize:1,
+						    searchItem:{
+								thirdapp_id:26,
+								menu_id:343
+							}
+					    };
+
+						var callback = (res)=>{
+							self.bannerData = res.data;
+						};
+						window.base.articleList(postData,callback);
+					},
+					
+					getProductData1() {
+						var self = this;
+						
+						var postData = {
+						    count: 0,
+						    currentPage: 1,
+						    pagesize:6,
+						    is_page:true,
+						    searchItem:{
+								thirdapp_id:26,
+								menu_id:334
+							}
+					    };
+
+						var callback = (res)=>{
+							self.productData1 = res.data;
+						};
+						window.base.articleList(postData,callback);
+					},
+
+					getProductData2() {
+						var self = this;
+						
+						var postData = {
+						    count: 0,
+						    currentPage: 1,
+						    pagesize:6,
+						    is_page:true,
+						    searchItem:{
+								thirdapp_id:26,
+								menu_id:336
+							}
+					    };
+
+						var callback = (res)=>{
+							self.productData2 = res.data;
+						};
+						window.base.articleList(postData,callback);
+					},
+
+					getProductData3() {
+						var self = this;
+						
+						var postData = {
+						    count: 0,
+						    currentPage: 1,
+						    pagesize:6,
+						    is_page:true,
+						    searchItem:{
+								thirdapp_id:26,
+								menu_id:337
+							}
+					    };
+
+						var callback = (res)=>{
+							self.productData3 = res.data;
+						};
+						window.base.articleList(postData,callback);
+					},
+
+					getProductData4() {
+						var self = this;
+						
+						var postData = {
+						    count: 0,
+						    currentPage: 1,
+						    pagesize:6,
+						    is_page:true,
+						    searchItem:{
+								thirdapp_id:26,
+								menu_id:340
+							}
+					    };
+
+						var callback = (res)=>{
+							self.productData4 = res.data;
+						};
+						window.base.articleList(postData,callback);
+					},
+
+					getProductData5() {
+						var self = this;
+						
+						var postData = {
+						    count: 0,
+						    currentPage: 1,
+						    pagesize:6,
+						    is_page:true,
+						    searchItem:{
+								thirdapp_id:26,
+								menu_id:341
+							}
+					    };
+
+						var callback = (res)=>{
+							self.productData5 = res.data;
+						};
+						window.base.articleList(postData,callback);
+					},
+
+					getWeixinCopy() {
+						var self = this;
+						
+						var postData = {
+						    count: 0,
+						    currentPage: 1,
+						    pagesize:6,
+						    is_page:true,
+						    searchItem:{
+								thirdapp_id:26,
+								menu_id:342
+							}
+					    };
+
+						var callback = (res)=>{
+							self.weixinCopy = res.data;
+						};
+						window.base.articleList(postData,callback);
+					},
+
+					
+
+				}
+			});
+			
+		</script>
+</body>
+</html>
